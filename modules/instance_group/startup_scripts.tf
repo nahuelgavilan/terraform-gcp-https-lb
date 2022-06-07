@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------
 
 data "template_file" "cosmos_startup" {
-template = <<EOF
+  template = <<EOF
 # Locale
 echo "Modificar locale"
 Set-TimeZone -Id "Romance Standard Time"
@@ -101,7 +101,7 @@ EOF
 # ------------------------------------------------------------------------------
 
 data "template_file" "cosmosnet_startup" {
-template = <<EOF
+  template = <<EOF
 # Locale
 echo "Modificar locale"
 Set-TimeZone -Id "Romance Standard Time"

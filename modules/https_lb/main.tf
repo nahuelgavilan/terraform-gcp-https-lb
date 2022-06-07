@@ -71,5 +71,13 @@ resource "google_compute_managed_ssl_certificate" "cosmos" {
   }
 }
 
+# ------------------------------------------------------------------------------
+# Crea Managed Instance Group
+# ------------------------------------------------------------------------------
 
+resource "google_compute_instance_group" "cosmos" {
+    name= "cosmos"
+    
+  
+}
 
