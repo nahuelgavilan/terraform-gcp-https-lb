@@ -5,7 +5,7 @@ resource "google_compute_url_map" "cosmos_pro_lb" {
     hosts        = ["cosmos.cosmosgbc.com", "www.cosmos.cosmosgbc.com"]
     path_matcher = "path-matcher-1"
   }
-
+  
   name = "cosmos-pro-lb"
 
   path_matcher {
