@@ -48,7 +48,7 @@ resource "google_compute_target_https_proxy" "cosmos_lb_target_proxy" {
   name    = "${var.name}-${var.env}-lb-target-proxy"
   url_map = google_compute_url_map.cosmos_pro_lb[0].self_link
 
-  ssl_certificates = google_compute_managed_ssl_certificate.cosmos[0].self_link
+  ssl_certificates = google_compute_managed_ssl_certificate.cosmos[0].self_link ##Check because there is more than one
 }
 
 resource "google_compute_target_http_proxy" "cosmos_frontend_target_proxy" {
@@ -61,12 +61,12 @@ resource "google_compute_target_http_proxy" "cosmos_frontend_target_proxy" {
 # Crea Managed SSL Certificates
 # ------------------------------------------------------------------------------
 
-resource "google_compute_managed_ssl_certificate" "cosmos" {
-  name    = "${var.name}-cert"
+resource "google_compute_managed_ssl_certificate" "cosmos" { ##FOREACH ssl_cert | type = map(list(string)) | ssl_cert = { name = [ domain1,domain2]} 
+  name    = "${var.name}-cert"                               # ssl_cert.key
   project = var.project
 
   managed {
-    domains = var.managed_domains
+    domains = var.managed_domains # ssl_cert.value
   }
 }
 
@@ -80,19 +80,19 @@ resource "google_compute_url_map" "cosmos_pro_lb" {
   name            = "${var.name}-${var.env}-lb"
   default_service = var.backend_bucket
 
-   dynamic "host_rule" {
+  dynamic "host_rule" {
     for_each = var.hostnames
     content {
-      hosts               = [ host_rule.value ]
-      path_matcher        = "path-matcher-${host_rule.key}"
+      hosts        = [host_rule.value]
+      path_matcher = "path-matcher-${host_rule.key}"
     }
   }
 
   dynamic "path_matcher" {
     for_each = var.hostnames
     content {
-      name                = "path-matcher-${path_matcher.key}"
-      default_service     = google_compute_backend_service.default[path_matcher.key].id ##Revisar
+      name            = "path-matcher-${path_matcher.key}"
+      default_service = google_compute_backend_service.default[path_matcher.key].id ##Revisar
     }
   }
 
@@ -123,7 +123,7 @@ resource "google_compute_url_map" "cosmos_frontend_redirect" {
 #######################
 
 resource "google_compute_backend_service" "default" {
-  for_each = ##
+  ##FOREACH
   connection_draining_timeout_sec = 300
   health_checks                   = [google_compute_health_check.cosmos_hc[0].self_link] # Check if this resource neds to be in a list.
   load_balancing_scheme           = "EXTERNAL"
@@ -134,7 +134,7 @@ resource "google_compute_backend_service" "default" {
   session_affinity                = "CLIENT_IP"
   timeout_sec                     = var.timeout_sec
 
-  backend {
+  backend {                    ##foreach because there will be more than one backend for interop and creport. 
     group = var.instance_group # google_compute_instance_group_manager.xxx.instance_group
   }
 }
@@ -155,18 +155,18 @@ resource "google_compute_backend_bucket" "empty" {
 
 resource "google_compute_health_check" "cosmos_hc" {
 
-for_each = var.health_checks
+  for_each = var.health_checks
 
   check_interval_sec = 15
-  healthy_threshold  = var.healthy_threshold
-  name               = var.hc_name
+  healthy_threshold  = each.value.healthy_threshold
+  name               = each.key
   project            = var.project
 
   tcp_health_check {
-    port         = var.port
+    port         = each.value.port
     proxy_header = "NONE"
   }
 
   timeout_sec         = 5
-  unhealthy_threshold = var.unhealthy_threshold
+  unhealthy_threshold = each.value.unhealthy_threshold
 }

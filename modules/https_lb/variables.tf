@@ -36,15 +36,19 @@ variable "bucket_backend" {
 }
 
 variable "hostnames" {
-  type                 = list(string)
-  default              = null
-}
-
-variable "backend_bucket" {
-  description = "The self_link of the backend service"
-  type        = string
+  type    = list(string)
+  default = null
 }
 
 #######################
-####   URL Maps   ####
+####  Health Check ####
 #######################
+
+variable "health_checks" {
+  description = "The health checks required for each Backend. 'healthcheck name = {healthy_threshold = 'xxx', port = 'xxx', unhealthy_threshold = 'xxx'}'"
+  type = map(object({
+    healthy_threshold   = string
+    port                = string
+    unhealthy_threshold = string
+  }))
+}
