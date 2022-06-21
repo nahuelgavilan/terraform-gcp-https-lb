@@ -21,9 +21,9 @@ variable "env" {
 ####   SSL Certs   ####
 #######################
 
-variable "managed_domains" {
-  description = "Domains for which a managed SSL certificate will be valid"
-  type        = list(any)
+variable "ssl_cert" {
+  description = "Name and domains of the SSL Certificate"
+  type        = map(list(string))
 }
 
 #######################
@@ -36,19 +36,32 @@ variable "bucket_backend" {
 }
 
 variable "hostnames" {
-  type    = list(string)
-  default = null
+  type = list(string)
 }
 
-#######################
-####  Health Check ####
-#######################
+######################################
+####  Backend Ser. and Healtcheck ####
+######################################
 
-variable "health_checks" {
-  description = "The health checks required for each Backend. 'healthcheck name = {healthy_threshold = 'xxx', port = 'xxx', unhealthy_threshold = 'xxx'}'"
+variable "backends" {
+  description = "The Backend Service which handles the request. 'backend name = {healthy_threshold = 'xxx', port = 'xxx', unhealthy_threshold = 'xxx'}'"
   type = map(object({
-    healthy_threshold   = string
-    port                = string
-    unhealthy_threshold = string
+    port_name   = string
+    timeout_sec = number
+
+    health_check = object({
+      check_interval_sec  = number
+      timeout_sec         = number
+      healthy_threshold   = number
+      unhealthy_threshold = number
+      port                = number
+    })
+
+    groups = list(object({
+      group = string
+
+    }))
+
   }))
+
 }
