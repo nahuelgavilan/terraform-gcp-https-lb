@@ -7,7 +7,13 @@
 # ------------------------------------------------------------------------------
 
 resource "google_compute_instance_template" "cosmos" {
+  project = var.project
+  name    = "${var.name}-${var.env}"
+  region  = var.region
+
+  machine_type   = "n2-standard-2"
   can_ip_forward = "false"
+  tags           = ["cosmos", "hc", "rdp"]
 
   confidential_instance_config {
     enable_confidential_compute = "false"
@@ -16,7 +22,7 @@ resource "google_compute_instance_template" "cosmos" {
   disk {
     auto_delete  = "true"
     boot         = "true"
-    device_name  = var.intance_template_name
+    device_name  = "${var.name}-${var.env}"
     disk_size_gb = "50"
     disk_type    = "pd-ssd"
     mode         = "READ_WRITE"
@@ -24,13 +30,11 @@ resource "google_compute_instance_template" "cosmos" {
     type         = "PERSISTENT"
   }
 
-  machine_type = "n2-standard-2"
 
   metadata = {
     windows-startup-script-ps1 = data.template_file.cosmos_startup.rendered
   }
 
-  name = var.intance_template_name
 
   network_interface {
     network            = "https://www.googleapis.com/compute/v1/projects/grupobc-sharedvpc/global/networks/vpc-shared-core"
@@ -39,8 +43,6 @@ resource "google_compute_instance_template" "cosmos" {
     subnetwork_project = "grupobc-sharedvpc"
   }
 
-  project = var.project
-  region  = var.region
 
   reservation_affinity {
     type = "ANY_RESERVATION"
@@ -64,7 +66,6 @@ resource "google_compute_instance_template" "cosmos" {
     enable_vtpm                 = "true"
   }
 
-  tags = ["cosmos", "hc", "rdp"]
 }
 
 # ------------------------------------------------------------------------------
@@ -72,6 +73,11 @@ resource "google_compute_instance_template" "cosmos" {
 # ------------------------------------------------------------------------------
 
 resource "google_compute_instance_template" "cosmosnet" {
+  project = "gbc-cosmos-pro"
+  name    = "cosmosnet-pro-n2"
+  region  = "europe-west1"
+
+  machine_type   = "n2-standard-2"
   can_ip_forward = "false"
 
   confidential_instance_config {
@@ -81,7 +87,7 @@ resource "google_compute_instance_template" "cosmosnet" {
   disk {
     auto_delete  = "true"
     boot         = "true"
-    device_name  = "cosmosnet-pro-26-5-22"
+    device_name  = "${var.name}-${var.env}"
     disk_size_gb = "50"
     disk_type    = "pd-ssd"
     mode         = "READ_WRITE"
@@ -89,13 +95,11 @@ resource "google_compute_instance_template" "cosmosnet" {
     type         = "PERSISTENT"
   }
 
-  machine_type = "n2-standard-2"
 
   metadata = {
     windows-startup-script-ps1 = data.template_file.cosmosnet_startup.rendered
   }
 
-  name = "cosmosnet-pro-n2"
 
   network_interface {
     network            = "https://www.googleapis.com/compute/v1/projects/grupobc-sharedvpc/global/networks/vpc-shared-core"
@@ -104,8 +108,6 @@ resource "google_compute_instance_template" "cosmosnet" {
     subnetwork_project = "grupobc-sharedvpc"
   }
 
-  project = "gbc-cosmos-pro"
-  region  = "europe-west1"
 
   reservation_affinity {
     type = "ANY_RESERVATION"

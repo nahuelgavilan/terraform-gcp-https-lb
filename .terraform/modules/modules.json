@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"cosmosgroup","Source":"./modules/instance_groups","Dir":"modules/instance_groups"},{"Key":"","Source":"","Dir":"."},{"Key":"cosmos","Source":"./modules/https_lb","Dir":"modules/https_lb"}]}

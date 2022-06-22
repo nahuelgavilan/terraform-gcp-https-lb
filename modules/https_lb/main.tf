@@ -189,7 +189,7 @@ resource "google_compute_health_check" "default" {
   unhealthy_threshold = lookup(each.value["health_check"], "unhealthy_threshold", 2)
 
   tcp_health_check {
-    port         = lookup(each.value["health_check"], "port", 1330)
+    port         = lookup(each.value["health_check"], "port", 80)
     proxy_header = "NONE"
   }
 

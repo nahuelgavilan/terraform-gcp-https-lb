@@ -24,19 +24,16 @@ variable "env" {
 variable "ssl_cert" {
   description = "Name and domains of the SSL Certificate"
   type        = map(list(string))
+
 }
 
 #######################
 ####   URL Maps   ####
 #######################
 
-variable "bucket_backend" {
-  description = "The self_link of the empty bucket"
-  type        = string
-}
-
 variable "hostnames" {
-  type = list(string)
+  type = list(list(string))
+
 }
 
 ######################################
@@ -63,5 +60,6 @@ variable "backends" {
     }))
 
   }))
+
 
 }
